@@ -84,22 +84,22 @@ VERSION_PLATFORM="${1}"
 # 打包信息
 VERSION_INFO="info:${2}"
 
-if [ -f ${DEVTOOL_PATH_WIN} ]; then
+if [[ "${DEVTOOL_PATH_WIN}" != "" && -e ${DEVTOOL_PATH_WIN} ]]; then
  DEVTOOL_PATH=${DEVTOOL_PATH_WIN}
- echo "微信开发者工具路径：${DEVTOOL_PATH}"
+ echo "微信开发者工具路径：${WECHAT_DEVTOOL_PATH_CLI}"
 fi
 
-if [ -f ${DEVTOOL_PATH_MAC} ]; then
+if [[ "${DEVTOOL_PATH_MAC}" != "" && -e ${DEVTOOL_PATH_MAC} ]]; then
  DEVTOOL_PATH=${DEVTOOL_PATH_MAC}
  echo "微信开发者工具路径：${DEVTOOL_PATH}"
 fi
 
-if [ "${DEVTOOL_PATH}" = "" ]; then
+if [[ "${DEVTOOL_PATH}" = "" ]]; then
   echo "微信开发者工具未找到，可能路径错误。"
   exit
 fi
 
-#if [ ${1} =~ ${VERSION_RULE} ]; then
+#if [[ ${1} =~ ${VERSION_RULE} ]]; then
 #  # 打包专属版
 #  uploadPackage ${DEVTOOL_PATH} ${SHELL_FOLDER} true ${APPID_SERVICE} ${VERSION_SERVICE} ${VERSION_INFO}
 #  # 打包平台版
