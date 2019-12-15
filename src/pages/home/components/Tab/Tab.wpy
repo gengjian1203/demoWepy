@@ -1,0 +1,55 @@
+<style lang="less" src="./Tab.less" scoped>
+  
+</style>
+
+<template>
+  <view class="wrap">
+    <ul class="content">
+      <repeat for="{{list}}" key="{{item.id}}">
+        <li class="item" @tap="HandleClickItem({{item}},{{index}})">
+          <view class="ellipsis {{ nTabSelect == item.id ? 'item-actived' : ''}}">
+            <span>{{item.title}}</span>
+            <span>({{item.num}})</span>
+          </view>
+        </li>
+      </repeat>
+      <li class="item-order" @tap="HandleClickImage">
+        <image class="item-image" src="https://pic.qianmi.com/qmui/v0.2/img/cards/customer-slice.png" mode="aspectFit"/>
+      </li>
+    </ul>
+  </view>
+</template>
+
+<script lang="TypeScript">
+import wepy from 'wepy'
+
+export default class Tab extends wepy.component {
+  data = {
+    nTabSelect: 1
+  }
+  props = {
+    list: Array,
+    default: [],
+    twoWay: true
+  }
+  methods = {
+    HandleClickItem(item, index) {
+      this.nTabSelect = item.id
+      this.list[index].num++
+      this.$apply()
+      this.$emit('HandleAddCount', item.id, item.num)
+    },
+    HandleClickImage() {
+      console.log('222222==+++++')
+      this.list[0].num = 10
+      this.$apply()
+    }
+  }
+  events = {
+    'HandleSendMessage': (index) => {
+      console.log(this.$name, index)
+    }
+  }
+}
+
+</script>

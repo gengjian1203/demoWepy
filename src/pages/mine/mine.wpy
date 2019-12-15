@@ -1,0 +1,57 @@
+<style lang="less" src="./mine.less" scoped>
+
+</style>
+
+<template>
+  <view class="wrap">
+    <view class="show">
+      <view>{{test}}</view>
+      <test>
+        <view slot="desc">2222</view>
+      </test>
+
+      <view @tap="handleShowToast">牛牛牛</view>
+    </view>
+
+    <view class="box">
+      <text class="box-tag">收拾</text>
+      <text calss="box-txt">回复回复回复回复回复回复方法欧尼酱ID偶是圣诞节哦回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复方法欧尼酱ID偶是圣诞节哦回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复方法欧尼酱ID偶是圣诞节哦回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复方法欧尼酱ID偶是圣诞节哦回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复方法欧尼酱ID偶是圣诞节哦回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复回复</text>
+    </view>
+
+    <bar class="bar"></bar>
+  </view>
+</template>
+
+<script lang="TypeScript">
+import wepy from 'wepy'
+import Test from '@com/Test/Test'
+import Bar from '@com/Bar/Bar'
+
+export default class mine extends wepy.page {
+  data = {
+    test: 'This is mine'
+  }
+
+  components = {
+    test: Test,
+    bar: Bar
+  }
+
+  methods = {
+    handleShowToast() {
+      wx.showLoading({
+        title: '加载中'
+      })
+
+      setTimeout(() => {
+        wx.showToast({
+          title: '成功',
+          icon: 'success',
+          duration: 2000
+        })
+      }, 2000)
+    }
+  }
+}
+
+</script>

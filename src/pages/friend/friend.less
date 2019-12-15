@@ -1,0 +1,56 @@
+.wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .show {
+    flex: 1 1 auto;
+  }
+
+  .newspaper {
+    -moz-column-count:2; /* Firefox */
+    -webkit-column-count:2; /* Safari and Chrome */
+    column-count:2;
+    /*指定列宽*/
+    column-width: 350rpx;
+    /*指定列与列之间的间距*/
+    //column-gap: 20rpx;
+  }
+
+  .item1 {
+    width: 350rpx;
+    height: 100rpx;
+    background: green;
+    margin-bottom: 20rpx;
+    transition: all 1s;
+  }
+
+  .item1:hover {
+    width: 400rpx;
+    height: 150rpx;
+  }
+
+  .item2 {
+    width: 350rpx;
+    height: 200rpx;
+    background: orange;
+    margin-bottom: 20rpx;
+  }
+  .item3 {
+    width: 350rpx;
+    height: 300rpx;
+    background: antiquewhite;
+    margin-bottom: 20rpx;
+  }
+  .item4 {
+    width: 350rpx;
+    height: 400rpx;
+    background: cornflowerblue;
+    margin-bottom: 20rpx;
+  }
+
+
+  .bar {
+    flex: 0 0 100rpx;
+  }
+}

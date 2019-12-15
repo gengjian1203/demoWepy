@@ -1,0 +1,61 @@
+<style lang="less" src="./index.less">
+
+</style>
+
+<template>
+  <view>This is TestAsync.......page.</view>
+
+  <view class="box">
+    <repeat for="{{arrlist}}" key="index">
+      <form wx:if="{{item.isShow}}" class="child">
+        <view class="kid"></view>
+      </form>
+    </repeat>
+  </view>
+
+  <view @tap="onHideClick">隐藏</view>
+</template>
+
+<script lang="typescript">
+  import wepy from 'wepy'
+
+  export default class TestAsync extends wepy.page {
+    data = {
+      msg: '',
+      arrlist: [{
+        id: '1',
+        isShow: true
+      }, {
+        id: '2',
+        isShow: true
+      }, {
+        id: '3',
+        isShow: true
+      }, {
+        id: '4',
+        isShow: true
+      }]
+    };
+
+    /// ///////////////////////////////////////////////
+    // 生命周期函数
+    /// ///////////////////////////////////////////////
+    async onLoad() {
+      wx.setNavigationBarTitle({
+        title: '测试阴影'
+      })
+    }
+
+    /// ///////////////////////////////////////////////
+    // 绑定事件函数
+    /// ///////////////////////////////////////////////
+    onHideClick() {
+      this.arrlist[3].isShow = !this.arrlist[3].isShow
+      this.$apply()
+    }
+
+    /// ///////////////////////////////////////////////
+    // 自定义函数
+    /// ///////////////////////////////////////////////
+  }
+</script>

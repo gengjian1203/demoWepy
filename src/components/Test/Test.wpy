@@ -1,0 +1,20 @@
+<style lang="less" src="./Test.less" scoped>
+</style>
+
+<template>
+  <view class="test">
+    <slot name="title">This is ttttttitle</slot>
+    <slot name="desc">This is Desc112111</slot>
+    <slot name="info">This.si  info</slot>
+  </view>
+</template>
+
+<script lang="TypeScript">
+import wepy from 'wepy'
+
+export default class Test extends wepy.component {
+  data = {
+    test: 'test'
+  }
+}
+</script>

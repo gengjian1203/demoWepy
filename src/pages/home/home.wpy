@@ -1,0 +1,127 @@
+<style lang="less" src="./home.less" scoped>
+</style>
+
+<template>
+  <view class="wrap">
+    <view>{{extKey}}-{{exkValue}}</view>
+    <search class="search"></search>
+    <tab class="tab" :list.sync="arrTab"></tab>
+    <list class="list" :list.sync="arrList"></list>
+    <view class="show">
+      <view>子组件传值nID:{{nID}}</view>
+      <view>子组件传值nCount:{{nCount}}</view>
+      <view>缓存nStorage:{{nStorage}}</view>
+      <view>全局变量{{nGlobal}}</view>
+      <view class="group">
+        <button @tap="HandleClickAllMessage">群发消息</button>
+        <button @tap="HandleClickMessage">群发消息</button>
+        <button @tap="HandleClickCallTab">调用Tab组件函数</button>
+      </view>
+    </view>
+    <bar class="bar">
+    </bar>
+  </view>
+</template>
+
+<script lang="TypeScript">
+  import wepy from 'wepy'
+  import Search from '@home/components/Search/Search'
+  import Tab from '@home/components/Tab/Tab'
+  import List from '@home/components/List/List'
+  import Bar from '@com/Bar/Bar'
+
+  export default class Home extends wepy.page {
+    data = {
+      msg: 'This is message.',
+      arrTab: [{
+        id: 1,
+        title: '我管理的',
+        num: 2
+      }, {
+        id: 2,
+        title: '我参与的',
+        num: 18
+      }],
+      arrList: [{
+        id: 1,
+        title: '第一项',
+        desc: '玻璃博咯'
+      }, {
+        id: 2,
+        title: '第二项',
+        desc: '莫鲁姆咯'
+      }, {
+        id: 3,
+        title: '第三项',
+        desc: '酷奇酷奇'
+      }, {
+        id: 4,
+        title: '第四项',
+        desc: '无咯无咯'
+      }],
+      nID: 0,
+      nCount: 0,
+      nStorage: 0,
+      nGlobal: 0,
+      extKey: '',
+      exkValue: ''
+    }
+    computed = {
+      nGlobal () {
+        return wepy.$instance.globalData.nGlobalCount
+      },
+      nStorage () {
+        return wx.getStorageSync('storage')
+      }
+    }
+    methods = {
+      HandleClickAllMessage() {
+        this.$broadcast('HandleSendMessage', 111)
+      },
+      HandleClickMessage () {
+        console.log('test')
+      },
+      HandleClickCallTab() {
+        wx.showToast({
+          title: '1111',
+          icon: 'success',
+          duration: 500
+        })
+        this.arrTab[1].num++
+      }
+    }
+    components = {
+      search: Search,
+      tab: Tab,
+      list: List,
+      bar: Bar
+    }
+    events = {
+      'refersh': () => {
+        this.$apply()
+      },
+      'HandleAddCount': (nID, nNum, $event) => {
+        this.nID += nID
+        this.nCount += nNum
+        // console.log(this.$name,"receive", $event.name,"from", $event.source.$name)
+      }
+    }
+    onLoad() {
+      wx.showToast({
+        title: '开始',
+        icon: 'success',
+        duration: 1000
+      })
+      // wx.showNavigationBarLoading()
+      wx.hideNavigationBarLoading();
+
+      // 读取本地js
+      var localData = require('./ext.js');
+      console.log(localData.testJsonList)
+      this.extKey = 'extEnable';
+      this.exkValue = localData.testJsonList[this.extKey];
+      this.$apply();
+
+    }
+  }
+</script>

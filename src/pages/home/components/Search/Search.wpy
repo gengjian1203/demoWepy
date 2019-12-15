@@ -1,0 +1,73 @@
+<style lang="less" src="./Search.less" scoped>
+</style>
+
+<template>
+  <view class="wrap">
+    <view class="content">
+      <!-- <image class="logo" src="https://img.1000.com/qm-a-img/prod/m12341sey/910c1543a71c52c6bb8b6ea4bfe49b57.png?x-oss-process=image/resize,w_60,h_60" mode="aspectFit"></image> -->
+      <view class="logo" @tap="HandleClickLogo">
+        <image class="logo-logo" src="https://img.1000.com/qm-a-img/prod/m12341sey/910c1543a71c52c6bb8b6ea4bfe49b57.png?x-oss-process=image/resize,w_60,h_60" mode="aspectFit"></image>
+        <view class="logo-text">写点什么</view>
+      </view>
+      <view class="main" @tap="HandleClickSearch">
+        <view class="icon iconfont icon-search"></view>
+        <view class="text">搜索</view>
+      </view>
+      <view class="add" @tap="HandleClickAdd">+</view>
+    </view>
+  </view>
+</template>
+
+<script lang="TypeScript">
+  import wepy from 'wepy'
+
+  export default class Search extends wepy.component {
+    data = {
+      test: 'test',
+      nStorage: 0
+    }
+
+    methods = {
+      HandleClickLogo() {
+        wepy.$instance.globalData.nGlobalCount += 2
+        this.$emit('refersh')
+        wx.showToast({
+          title: '写点什么',
+          icon: 'success',
+          mask: true,
+          duration: 2000
+        })
+      },
+      HandleClickSearch() {
+        wx.setStorageSync('storage', ++this.nStorage)
+        this.$emit('refersh')
+        wx.showToast({
+          title: '搜索',
+          icon: 'loading',
+          duration: 500
+        })
+      },
+      HandleClickAdd() {
+        wepy.$instance.globalData.nGlobalCount = 3
+        this.$emit('refersh')
+        wx.showModal({
+          title: '提示',
+          content: '收拾收拾啥时候',
+          success: (res) => {
+            if (res.cancel) {
+              console.log('取消')
+            } else {
+              console.log('确认')
+            }
+          }
+        })
+      }
+    }
+
+    events = {
+      'HandleSendMessage': (index) => {
+        console.log(this.$name, index)
+      }
+    }
+  }
+</script>

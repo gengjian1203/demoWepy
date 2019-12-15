@@ -1,0 +1,17 @@
+<style lang="less" scoped>
+
+</style>
+
+<template>
+  <view>{{msg}}</view>
+</template>
+
+<script lang="TypeScript">
+  import wepy from 'wepy'
+
+  export default class Pig extends wepy.component {
+    data = {
+      msg: 'This is a Dog.'
+    }
+  }
+</script>

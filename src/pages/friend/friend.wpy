@@ -1,0 +1,57 @@
+<style lang="less" src="./friend.less" scoped>
+
+</style>
+
+<template>
+  <view class="wrap">
+    <view class="show">
+      <view>{{text}}</view>
+      <view>{{param}}</view>
+    </view>
+    <bar class="bar"></bar>
+
+
+    <view>sassas</view>
+    <view class="newspaper">
+      <view class="item1">1</view>
+      <view class="item2">2</view>
+      <view class="item3">3</view>
+      <view class="item4">4</view>
+      <view class="item4">5</view>
+      <view class="item3">6</view>
+      <view class="item3">7</view>
+      <view class="item1">8</view>
+      <view class="item2">9</view>
+      <view class="item4">10</view>
+      <view class="item3">11</view>
+      <view class="item3">12</view>
+      <view class="item1">13</view>
+      <view class="item2">14</view>
+      <view class="item4">15</view>
+      <view class="item3">16</view>
+      <view class="item3">17</view>
+    </view>
+
+  </view>
+</template>
+
+<script lang="TypeScript">
+import wepy from 'wepy'
+import Bar from '@com/Bar/Bar'
+
+export default class friend extends wepy.page {
+  data = {
+    text: 'This is friend',
+    param: ''
+  }
+
+  components = {
+    bar: Bar
+  }
+
+  onLoad(options) {
+    this.param = options.param
+  }
+}
+
+</script>

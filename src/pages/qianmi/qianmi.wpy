@@ -1,0 +1,88 @@
+<style lang="less" src="./qianmi.less" scoped>
+
+</style>
+
+<template>
+  <view class="wrap">
+    <view class="show">
+      <view>{{test}}</view>
+      <view>{{param}}</view>
+      <block>
+
+      </block>
+      <block>
+        <button @tap="HandleClickSwitch">Switch</button>
+      </block>
+      <button @tap="onSSSSSendClick">SSSSSSSS</button>
+    </view>
+    <bar class="bar"></bar>
+  </view>
+</template>
+
+<script lang="TypeScript">
+  import wepy from 'wepy'
+  import Bar from '@com/Bar/Bar'
+  import Cat from '@qianmi/components/Cat/Cat'
+  import Dog from '@qianmi/components/Dog/Dog'
+  import Pig from '@qianmi/components/Pig/Pig'
+
+  export default class qianmi extends wepy.page {
+    data = {
+      test: 'test',
+      param: '',
+      nSelectCom: 0
+    }
+
+    components = {
+      bar: Bar,
+      cat: Cat,
+      dog: Dog,
+      pig: Pig
+    }
+
+    methods = {
+      HandleClickSwitch () {
+        this.nSelectCom = ++this.nSelectCom % 3
+      },
+
+      onSSSSSendClick () {
+        wx.requestSubscribeMessage({
+          // 申请的订阅模板id
+          tmplIds: [
+            'haCoOpvb2Jfb6dtcWnntdv2aMnAE73LpQubyPOIkUDQ',
+            'T9tZ7fYJMkAEciL0uhGMUNvT38H3sJurGa_AV-gcYKs',
+            // 'o1WMOx_Sk4xzjKHouTwCfiVvDD4O476SyvrxFCwXgfc',
+            // 'dwThvkscVUnpdgLdnAbm_iUHFLgZw4AY1V5acwlE25o',
+            'v7s56Vb1U_GJWeCMxoDi7ZBqGpKNGsmzvAeSTjfvNhM'
+          ],
+          success(res) {
+            console.log(res)
+            // if (res[id] == 'accept') {
+            //   //用户同意了订阅
+            //   wx.showToast({
+            //     title: '订阅成功'
+            //   })
+            // } else {
+            //   //用户拒绝了订阅或当前游戏被禁用订阅消息
+            //   wx.showToast({
+            //     title: '订阅失败'
+            //   })
+            // }
+          },
+          fail(res) {
+            console.log(res)
+          },
+          complete(res) {
+            console.log(res)
+          }
+        })
+      }
+
+    }
+
+    onLoad(options) {
+      this.param = options.param
+    }
+  }
+
+</script>

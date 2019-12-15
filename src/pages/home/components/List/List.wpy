@@ -1,0 +1,26 @@
+<style lang="less" src="./List.less" scoped>
+</style>
+
+<template>
+  <ul>
+    <repeat for="{{list}}" key="{{item.id}}">
+      <li>
+        <view>{{item.title}}</view>
+        <view>{{item.desc}}</view>
+      </li>
+    </repeat>
+  </ul>
+</template>
+
+<script type="TypeScript">
+import wepy from 'wepy'
+
+export default class List extends wepy.component {
+  data = {
+    test: 'test'
+  },
+  props = {
+    list: Array
+  }
+}
+</script>
