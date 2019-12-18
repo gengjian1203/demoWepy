@@ -1,5 +1,6 @@
 #!/bin/bash
 ##################################################
+# https://blog.csdn.net/kakabuqinuo/article/details/99845797
 # getJsonString
 # 获取json 字符串型字段
 # $1 文件
@@ -8,6 +9,11 @@
 getJsonString() {
   echo "getJsonString($*)"
   #grep -Po 'extAppid[": ]+\K[^"]+' ${1}
+  
+  value=`echo $1 | sed 's/.*"extAppid": \([^,}]*\).*/\1/'`
+  echo $value | sed 's/\"//g'
+  #dev_id=$(grep -Po 'extAppid[": ]+\K[^"]+' ${1})
+  #echo $dev_id
 }
 
 ##################################################
@@ -117,19 +123,23 @@ uploadPackageMac() {
 }
 
 ##################################################
-# 千米小程序本地打码脚本（仅支持Mac）
-# macOS: <安装路径>/Contents/MacOS/cli
-# Windows: <安装路径>/cli.bat
+# 千米小程序本地打码脚本
+# macOS:
+# <安装路径>/Contents/MacOS/cli
+# Windows:
+# 配置环境变量
+# WECHAT_DEVTOOL_PATH_CLI: <安装路径>/cli.bat
+# 配置nodejs/npm/wepy环境
 # https://www.jianshu.com/p/a988ccb34fe7
 # https://www.jianshu.com/p/2d9fa3659645
-# 示例
-# ./autoPackage.sh V0.1.8 1111版本
-# ./autoPackage.sh v0.1.8 1111版本
 ##################################################
 # main
 # $0 执行文件
 # $1 版本号
 # $2 版本备注
+# 示例
+# ./autoPackage.sh V0.1.8 1111版本
+# ./autoPackage.sh v0.1.8 1111版本
 ##################################################
 
 echo "=====千米小程序本地打码脚本====="
@@ -152,47 +162,50 @@ VERSION_PLATFORM="${1}"
 # 打包信息
 VERSION_INFO="info:${2}"
 
-# 获取操作系统/开发者工具路径
-if [[ "${DEVTOOL_PATH_WIN}" != "" && -e ${DEVTOOL_PATH_WIN} ]]; then
-  DEVTOOL_PATH=${DEVTOOL_PATH_WIN}
-  SYSTEM_SIGN="WIN"
-elif [[ "${DEVTOOL_PATH_MAC}" != "" && -e ${DEVTOOL_PATH_MAC} ]]; then
-  DEVTOOL_PATH=${DEVTOOL_PATH_MAC}
-  SYSTEM_SIGN="MAC"
-fi
-if [[ "${SYSTEM_SIGN}" != "" ]]; then
-  echo "当前系统为：${SYSTEM_SIGN}，开发者工具路径：${DEVTOOL_PATH}"
-else
-  echo "微信开发者工具未找到，可能路径错误。"
-  exit
-fi
+TMP=getJsonString ./src/ext.json extAppid
+echo ${TMP}
 
-# 打包
-if [[ "${SYSTEM_SIGN}" == "WIN" ]]; then
-  # 打包WIN
-  if [[ ${1} =~ ${VERSION_RULE} ]]; then
-    # 打包专属版
-    uploadPackageWin ${DEVTOOL_PATH} ${SHELL_FOLDER} true ${APPID_SERVICE} ${VERSION_SERVICE} ${VERSION_INFO}
-	# 打包平台版
-    uploadPackageWin ${DEVTOOL_PATH} ${SHELL_FOLDER} false ${APPID_PLATFORM} ${VERSION_PLATFORM} ${VERSION_INFO}
-    echo -e "专属版本号：${VERSION_SERVICE}\n平台版本号：${VERSION_PLATFORM}"
-  else
-    echo "版本号：${1} 非正常版本号，无法上传打码。"
-    exit
-  fi
-elif [[ "${SYSTEM_SIGN}" == "MAC" ]]; then
-  # 打包MAC
-  if [[ ${1} =~ ${VERSION_RULE} ]]; then
-    # 打包专属版
-    uploadPackageMac ${DEVTOOL_PATH} ${SHELL_FOLDER} true ${APPID_SERVICE} ${VERSION_SERVICE} ${VERSION_INFO}
-    # 打包平台版
-    uploadPackageMac ${DEVTOOL_PATH} ${SHELL_FOLDER} false ${APPID_PLATFORM} ${VERSION_PLATFORM} ${VERSION_INFO}
-    echo -e "专属版本号：${VERSION_SERVICE}\n平台版本号：${VERSION_PLATFORM}"
-  else
-    echo "版本号：${1} 非正常版本号，无法上传打码。"
-    exit
-  fi
-else
-  echo "异常错误。"
-  exit
-fi
+## 获取操作系统 / 开发者工具路径
+#if [[ "${DEVTOOL_PATH_WIN}" != "" && -e ${DEVTOOL_PATH_WIN} ]]; then
+#  DEVTOOL_PATH=${DEVTOOL_PATH_WIN}
+#  SYSTEM_SIGN="WIN"
+#elif [[ "${DEVTOOL_PATH_MAC}" != "" && -e ${DEVTOOL_PATH_MAC} ]]; then
+#  DEVTOOL_PATH=${DEVTOOL_PATH_MAC}
+#  SYSTEM_SIGN="MAC"
+#fi
+#if [[ "${SYSTEM_SIGN}" != "" ]]; then
+#  echo "当前系统为：${SYSTEM_SIGN}，开发者工具路径：${DEVTOOL_PATH}"
+#else
+#  echo "微信开发者工具未找到，可能路径错误。"
+#  exit
+#fi
+#
+## 打包
+#if [[ "${SYSTEM_SIGN}" == "WIN" ]]; then
+#  # 打包WIN
+#  if [[ ${1} =~ ${VERSION_RULE} ]]; then
+#    # 打包专属版
+#    uploadPackageWin ${DEVTOOL_PATH} ${SHELL_FOLDER} true ${APPID_SERVICE} ${VERSION_SERVICE} ${VERSION_INFO}
+#	# 打包平台版
+#    uploadPackageWin ${DEVTOOL_PATH} ${SHELL_FOLDER} false ${APPID_PLATFORM} ${VERSION_PLATFORM} ${VERSION_INFO}
+#    echo -e "专属版本号：${VERSION_SERVICE}\n平台版本号：${VERSION_PLATFORM}"
+#  else
+#    echo "版本号：${1} 非正常版本号，无法上传打码。"
+#    exit
+#  fi
+#elif [[ "${SYSTEM_SIGN}" == "MAC" ]]; then
+#  # 打包MAC
+#  if [[ ${1} =~ ${VERSION_RULE} ]]; then
+#    # 打包专属版
+#    uploadPackageMac ${DEVTOOL_PATH} ${SHELL_FOLDER} true ${APPID_SERVICE} ${VERSION_SERVICE} ${VERSION_INFO}
+#    # 打包平台版
+#    uploadPackageMac ${DEVTOOL_PATH} ${SHELL_FOLDER} false ${APPID_PLATFORM} ${VERSION_PLATFORM} ${VERSION_INFO}
+#    echo -e "专属版本号：${VERSION_SERVICE}\n平台版本号：${VERSION_PLATFORM}"
+#  else
+#    echo "版本号：${1} 非正常版本号，无法上传打码。"
+#    exit
+#  fi
+#else
+#  echo "异常错误。"
+#  exit
+#fi

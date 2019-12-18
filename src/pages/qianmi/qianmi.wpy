@@ -13,7 +13,9 @@
       <block>
         <button @tap="HandleClickSwitch">Switch</button>
       </block>
-      <button @tap="onSSSSSendClick">SSSSSSSS</button>
+      <button @tap="onMessageClick">拉起订阅消息</button>
+      <button @tap="onShowSetting">查看授权信息</button>
+      <button @tap="onOpenSetting">打开权限页面</button>
     </view>
     <bar class="bar"></bar>
   </view>
@@ -45,15 +47,15 @@
         this.nSelectCom = ++this.nSelectCom % 3
       },
 
-      onSSSSSendClick () {
+      onMessageClick () {
         wx.requestSubscribeMessage({
           // 申请的订阅模板id
           tmplIds: [
-            'haCoOpvb2Jfb6dtcWnntdv2aMnAE73LpQubyPOIkUDQ',
-            'T9tZ7fYJMkAEciL0uhGMUNvT38H3sJurGa_AV-gcYKs',
-            // 'o1WMOx_Sk4xzjKHouTwCfiVvDD4O476SyvrxFCwXgfc',
-            // 'dwThvkscVUnpdgLdnAbm_iUHFLgZw4AY1V5acwlE25o',
-            'v7s56Vb1U_GJWeCMxoDi7ZBqGpKNGsmzvAeSTjfvNhM'
+            // 'haCoOpvb2Jfb6dtcWnntdv2aMnAE73LpQubyPOIkUDQ',
+            // 'T9tZ7fYJMkAEciL0uhGMUNvT38H3sJurGa_AV-gcYKs',
+            'o1WMOx_Sk4xzjKHouTwCfiVvDD4O476SyvrxFCwXgfc',
+            'dwThvkscVUnpdgLdnAbm_iUHFLgZw4AY1V5acwlE25o',
+            // 'v7s56Vb1U_GJWeCMxoDi7ZBqGpKNGsmzvAeSTjfvNhM'
           ],
           success(res) {
             console.log(res)
@@ -74,6 +76,50 @@
           },
           complete(res) {
             console.log(res)
+          }
+        })
+      },
+
+      onShowSetting() {
+        wx.getSetting({
+          success(res) {
+            console.log(res)
+            var authMap = res.authSetting;
+            var length = Object.keys(authMap).length;
+            console.log("长度:" + length)
+            var isAuthAddress = 0; //是否授权通过，有三种情况，0:从未授权，1:授权成功，2:授权失败
+            // if ('scope.address' in authMap) {
+            if (authMap.hasOwnProperty('scope.address')){
+              if (authMap['scope.address']) { //已经授权成功
+                isAuthAddress = 1
+              } else { //授权拒绝
+                isAuthAddress = 2
+              }
+            } else { //没有授权过
+            }
+            if (isAuthAddress == 0) {
+              wx.authorize({
+                scope: 'scope.address',
+                success() {
+                  wx.showToast({
+                    title: '授权成功'
+                  })
+                },
+                fail(e) {
+                  wx.showToast({
+                    title: '授权失败'
+                  })
+                }
+              })
+            }
+          }
+        })
+      },
+
+      onOpenSetting() {
+        wx.openSetting({
+          success: (res) => {
+            console.log('sssss');
           }
         })
       }
