@@ -1,10 +1,10 @@
 {
-  "extEnable": false,
-  "extAppid": "wx1cac8cd76fcd3044",
+  "extEnable": true,
+  "extAppid": "wx821aadcd431646f9",
   "directCommit": false,
   "ext": {
     "appId": "APP1253717640514375681",
-    "wechatAppId": "wx1cac8cd76fcd3044",
+    "wechatAppId": "wx821aadcd431646f9",
     "appName": "授权的小程序名称",
     "productType": "INDUSTRY",
     "appLogo": "https://pic.qianmi.com/qmui/v0.2/img/logo256.png"
