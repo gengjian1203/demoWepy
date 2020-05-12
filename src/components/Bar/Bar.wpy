@@ -5,7 +5,7 @@
 <template>
   <view class="wrap">
     <view class="content">
-      <repeat for="{{arrList}}" key="{{item.id}}">
+      <repeat for="{{arrList}}" key="index">
         <view class="item" @tap="HandleClickBar({{item}})">
           <view class="item-icon iconfont {{nBarSelect === item.id ? item.iconed : item.icon}}"></view>
           <view>{{item.title}}</view>

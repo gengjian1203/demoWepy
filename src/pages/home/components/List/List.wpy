@@ -3,7 +3,7 @@
 
 <template>
   <ul>
-    <repeat for="{{list}}" key="{{item.id}}">
+    <repeat for="{{list}}" key="index">
       <li>
         <view>{{item.title}}</view>
         <view>{{item.desc}}</view>

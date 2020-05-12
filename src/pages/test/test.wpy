@@ -5,7 +5,7 @@
 <template>
   <view class="wrap">
     <scroll-view class="content" scroll-y="true">
-      <button wx:for="{{arrListBtn}}" wx:key="{{item}}" bindtap="{{item.fun}}">{{item.text}}</button>
+      <button wx:for="{{arrListBtn}}" wx:key="index" bindtap="{{item.fun}}">{{item.text}}</button>
       <view>吾问无为谓1</view>
       <view>吾问无为谓2</view>
       <view>吾问无为谓3</view>
@@ -54,6 +54,9 @@
       }, {
         text: '测试阴影',
         fun: 'HandleTestShadow'
+      }, {
+        text: '测试蓝牙',
+        fun: 'HandleTestBluetooth'
       }]
     };
 
@@ -61,24 +64,35 @@
       bar: Bar
     };
 
-    // 测试按钮
-    HandleBtnClick() {
-      console.log('测试按钮')
-    }
+    methods = {
+      // 测试按钮
+      HandleBtnClick() {
+        console.log('测试按钮')
+      },
 
-    // 测试异步
-    HandleTestAsync() {
-      wx.navigateTo({
-        url: 'pages/TestAsync/index'
-      })
-    }
+      // 测试异步
+      HandleTestAsync() {
+        wx.navigateTo({
+          url: 'pages/TestAsync/index'
+        });
+      },
 
-    // 测试阴影
-    HandleTestShadow() {
-      wx.navigateTo({
-        url: 'pages/TestShadow/index'
-      })
-    }
+      // 测试阴影
+      HandleTestShadow() {
+        wx.navigateTo({
+          url: 'pages/TestShadow/index'
+        });
+      },
+
+      // 测试蓝牙
+      HandleTestBluetooth() {
+        wx.navigateTo({
+          url: 'pages/TestBluetooth/index'
+        });
+      }
+
+    };
+
   }
 
 </script>

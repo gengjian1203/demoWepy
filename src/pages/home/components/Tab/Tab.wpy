@@ -1,11 +1,11 @@
 <style lang="less" src="./Tab.less" scoped>
-  
+
 </style>
 
 <template>
   <view class="wrap">
     <ul class="content">
-      <repeat for="{{list}}" key="{{item.id}}">
+      <repeat for="{{list}}" key="index">
         <li class="item" @tap="HandleClickItem({{item}},{{index}})">
           <view class="ellipsis {{ nTabSelect == item.id ? 'item-actived' : ''}}">
             <span>{{item.title}}</span>

@@ -38,7 +38,8 @@ export default class extends wepy.app {
       pages: [
         'test',
         'pages/TestAsync/index',
-        'pages/TestShadow/index'
+        'pages/TestShadow/index',
+        'pages/TestBluetooth/index'
       ]
     }],
     window: {

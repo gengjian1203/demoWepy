@@ -1,0 +1,226 @@
+<style lang="less" src="./index.less">
+
+</style>
+
+<template>
+  <view>This is TestBluetooth.......page.</view>
+  <button @tap="HandleOpenBluetoothCentral">
+    打开蓝牙（主设备）
+  </button>
+  <button @tap="HandleOpenBluetoothPeripheral">
+    打开蓝牙（从设备）
+  </button>
+  <button @tap="HandleCloseBluetooth">
+    关闭蓝牙
+  </button>
+  <button @tap="HandleSearchBluetooth">
+    搜索附近蓝牙设备
+  </button>
+  <button @tap="HandleStopSearchBluetooth">
+    停止搜索附近蓝牙设备
+  </button>
+
+
+  <view>已发现的外围设备，{{devices.length}}个</view>
+  <scroll-view scroll-y scroll-with-animation>
+    <view wx:for="{{devices}}" wx:key="index"
+          data-device-id="{{item.deviceId}}"
+          data-name="{{item.name || item.localName}}"
+          bindtap="createBLEConnection"
+          class="device_item"
+          hover-class="device_item_hover">
+      <view style="font-size: 16px; color: #333;">{{item.name}}</view>
+      <view style="font-size: 10px">信号强度: {{item.RSSI}}dBm ({{utils.max(0, item.RSSI + 100)}}%)</view>
+      <view style="font-size: 10px">UUID: {{item.deviceId}}</view>
+      <view style="font-size: 10px">Service数量: {{utils.len(item.advertisServiceUUIDs)}}</view>
+    </view>
+  </scroll-view>
+</template>
+
+<script lang="typescript">
+  import wepy from 'wepy'
+
+  export default class TestAsync extends wepy.page {
+    data = {
+      msg: '',
+      devices: [],
+    };
+
+    methods = {
+      // 打开蓝牙（主设备）
+      HandleOpenBluetoothCentral() {
+        console.log('HandleOpenBluetoothCentral');
+        wx.openBluetoothAdapter({
+          mode: 'central',
+          success: (res) => {
+            console.log('HandleOpenBluetoothCentral Success.', res);
+          },
+          fail: (err) => {
+            console.log('HandleOpenBluetoothCentral Fail.', err);
+          },
+          complete: (res) => {
+            console.log('HandleOpenBluetoothCentral Complete.', res);
+          }
+        });
+      },
+      // 打开蓝牙（从设备）
+      HandleOpenBluetoothPeripheral() {
+        console.log('HandleOpenBluetoothPeripheral');
+        wx.openBluetoothAdapter({
+          mode: 'peripheral',
+          success: (res) => {
+            console.log('HandleOpenBluetoothPeripheral Success.', res);
+          },
+          fail: (err) => {
+            console.log('HandleOpenBluetoothPeripheral Fail.', err);
+          },
+          complete: (res) => {
+            console.log('HandleOpenBluetoothPeripheral Complete.', res);
+          }
+        });
+      },
+      // 关闭蓝牙
+      HandleCloseBluetooth() {
+        console.log('HandleCloseBluetooth');
+        wx.closeBluetoothAdapter({
+          success: (res) => {
+            console.log('HandleCloseBluetooth Success.', res);
+          },
+          fail: (err) => {
+            console.log('HandleCloseBluetooth Fail.', err);
+          },
+          complete: (res) => {
+            console.log('HandleCloseBluetooth Complete.', res);
+          }
+        })
+      },
+      // 搜索附近蓝牙设备
+      // 安卓下部分机型需要有位置权限才能搜索到设备，需留意是否开启了位置权限
+      HandleSearchBluetooth() {
+        wx.startBluetoothDevicesDiscovery({
+          // allowDuplicatesKey: true,
+          success: (res) => {
+            console.log('startBluetoothDevicesDiscovery', res);
+            wx.onBluetoothDeviceFound((res) => {
+              res.devices.forEach(device => {
+                if (!device.name && !device.localName) {
+                  return
+                }
+                console.log('onBluetoothDeviceFound', device);
+                this.devices.push(device);
+              })
+              this.$apply();
+            })
+          },
+        })
+      },
+      // 停止搜索附近蓝牙设备
+      HandleStopSearchBluetooth() {
+        wx.stopBluetoothDevicesDiscovery({
+          success (res) {
+            console.log(res)
+          }
+        })
+      },
+      // 创建蓝牙连接
+      createBLEConnection(e) {
+        // 停止搜索
+        wx.stopBluetoothDevicesDiscovery({
+          success (res) {
+            console.log(res)
+          }
+        });
+        //
+        console.log('createBLEConnection', e);
+        //
+        const ds = e.currentTarget.dataset
+        const deviceId = ds.deviceId
+        const name = ds.name
+        wx.createBLEConnection({
+          deviceId,
+          success: (res) => {
+            this.setData({
+              connected: true,
+              name,
+              deviceId,
+            })
+            this.getBLEDeviceServices(deviceId)
+          }
+        })
+      }
+    };
+
+    /// ///////////////////////////////////////////////
+    // 生命周期函数
+    /// ///////////////////////////////////////////////
+    async onLoad() {
+      wx.setNavigationBarTitle({
+        title: '测试蓝牙'
+      })
+    }
+
+    /// ///////////////////////////////////////////////
+    // 自定义函数
+    /// ///////////////////////////////////////////////
+    // 获取蓝牙设备的所有服务
+    getBLEDeviceServices(deviceId) {
+      wx.getBLEDeviceServices({
+        deviceId,
+        success: (res) => {
+          console.log('getBLEDeviceServices services:', res.services)
+          for (let i = 0; i < res.services.length; i++) {
+            if (res.services[i].isPrimary) {
+              this.getBLEDeviceCharacteristics(deviceId, res.services[i].uuid)
+              return
+            }
+          }
+        }
+      })
+    }
+
+    // 获取蓝牙设备某个服务中所有特征值
+    getBLEDeviceCharacteristics(deviceId, serviceId) {
+      //
+      wx.getBLEDeviceCharacteristics({
+        deviceId,
+        serviceId,
+        success: (res) => {
+          console.log('getBLEDeviceCharacteristics success', res.characteristics)
+          // for (let i = 0; i < res.characteristics.length; i++) {
+          //   let item = res.characteristics[i]
+          //   if (item.properties.read) {
+          //     wx.readBLECharacteristicValue({
+          //       deviceId,
+          //       serviceId,
+          //       characteristicId: item.uuid,
+          //     })
+          //   }
+          //   if (item.properties.write) {
+          //     this.setData({
+          //       canWrite: true
+          //     })
+          //     this._deviceId = deviceId
+          //     this._serviceId = serviceId
+          //     this._characteristicId = item.uuid
+          //     this.writeBLECharacteristicValue()
+          //   }
+          //   if (item.properties.notify || item.properties.indicate) {
+          //     wx.notifyBLECharacteristicValueChange({
+          //       deviceId,
+          //       serviceId,
+          //       characteristicId: item.uuid,
+          //       state: true,
+          //     })
+          //   }
+          // }
+        },
+        fail(res) {
+          console.error('getBLEDeviceCharacteristics', res)
+        }
+      });
+
+
+      // 监听低功耗蓝牙设备的特征值变化事件。
+    }
+  }
+</script>
