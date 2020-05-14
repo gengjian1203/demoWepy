@@ -33,17 +33,54 @@
       <view style="font-size: 10px">信号强度: {{item.RSSI}}dBm ({{utils.max(0, item.RSSI + 100)}}%)</view>
       <view style="font-size: 10px">UUID: {{item.deviceId}}</view>
       <view style="font-size: 10px">Service数量: {{utils.len(item.advertisServiceUUIDs)}}</view>
+      <view wx:for="{{item.advertisServiceUUIDs}}" wx:key="index">
+        <view>{{item}}</view>
+      </view>
     </view>
   </scroll-view>
+
+
+  <view class="connected_info" wx:if="{{connected}}">
+    <view>
+      <text>已连接到 {{name}}</text>
+      <view class="operation">
+        <button wx:if="{{canWrite}}" size="mini" bindtap="writeBLECharacteristicValue">写数据</button>
+        <button size="mini" bindtap="closeBLEConnection">断开连接</button>
+      </view>
+    </view>
+    <view wx:for="{{chs}}" wx:key="index" style="font-size: 12px; margin-top: 10px;">
+      <view>UUID: {{_deviceId}}</view>
+      <view>_serviceId: {{_serviceId}}</view>
+      <view>_characteristicId: {{_characteristicId}}</view>
+      <view>特性UUID: {{item.uuid}}</view>
+      <view>特性值: {{item.value}}</view>
+    </view>
+  </view>
 </template>
 
 <script lang="typescript">
   import wepy from 'wepy'
+  import utils from './utils.wxs';
 
-  export default class TestAsync extends wepy.page {
+  export default class TestBluetooth extends wepy.page {
     data = {
+      connected: false,
+      name: '',
+      deviceId: '',
+
       msg: '',
       devices: [],
+      chs: [],
+
+      canWrite: false,
+
+      _deviceId: '',
+      _serviceId: '',
+      _characteristicId: '',
+    };
+
+    wxs = {
+      utils: utils
     };
 
     methods = {
@@ -106,9 +143,18 @@
                 if (!device.name && !device.localName) {
                   return
                 }
-                console.log('onBluetoothDeviceFound', device);
-                this.devices.push(device);
-              })
+                const foundDevices = this.data.devices
+                const idx = this.inArray(foundDevices, 'deviceId', device.deviceId)
+                const data = {}
+                if (idx === -1) {
+                  this.devices[foundDevices.length] = device
+                } else {
+                  this.devices[idx] = device
+                }
+                console.log('onBluetoothDeviceFound advertisServiceUUIDs', device.advertisServiceUUIDs);
+              });
+
+
               this.$apply();
             })
           },
@@ -133,21 +179,31 @@
         //
         console.log('createBLEConnection', e);
         //
-        const ds = e.currentTarget.dataset
-        const deviceId = ds.deviceId
-        const name = ds.name
+        const ds = e.currentTarget.dataset;
+        const deviceId = ds.deviceId;
+        const name = ds.name;
         wx.createBLEConnection({
           deviceId,
           success: (res) => {
-            this.setData({
-              connected: true,
-              name,
-              deviceId,
-            })
+            this.connected = true;
+            this.name = name;
+            this.deviceId = deviceId;
+            this.$apply();
+            console.log('createBLEConnection', res);
             this.getBLEDeviceServices(deviceId)
           }
         })
-      }
+      },
+      // 关闭链接
+      closeBLEConnection() {
+        wx.closeBLEConnection({
+          deviceId: this.deviceId
+        });
+        this.connected = false;
+        this.chs = [];
+        this.canWrite = false;
+        this.$apply();
+      },
     };
 
     /// ///////////////////////////////////////////////
@@ -169,10 +225,10 @@
         success: (res) => {
           console.log('getBLEDeviceServices services:', res.services)
           for (let i = 0; i < res.services.length; i++) {
-            if (res.services[i].isPrimary) {
+            // if (res.services[i].isPrimary) {
               this.getBLEDeviceCharacteristics(deviceId, res.services[i].uuid)
-              return
-            }
+              // return
+            // }
           }
         }
       })
@@ -186,41 +242,134 @@
         serviceId,
         success: (res) => {
           console.log('getBLEDeviceCharacteristics success', res.characteristics)
-          // for (let i = 0; i < res.characteristics.length; i++) {
-          //   let item = res.characteristics[i]
-          //   if (item.properties.read) {
-          //     wx.readBLECharacteristicValue({
-          //       deviceId,
-          //       serviceId,
-          //       characteristicId: item.uuid,
-          //     })
-          //   }
-          //   if (item.properties.write) {
-          //     this.setData({
-          //       canWrite: true
-          //     })
-          //     this._deviceId = deviceId
-          //     this._serviceId = serviceId
-          //     this._characteristicId = item.uuid
-          //     this.writeBLECharacteristicValue()
-          //   }
-          //   if (item.properties.notify || item.properties.indicate) {
-          //     wx.notifyBLECharacteristicValueChange({
-          //       deviceId,
-          //       serviceId,
-          //       characteristicId: item.uuid,
-          //       state: true,
-          //     })
-          //   }
-          // }
+          for (let i = 0; i < res.characteristics.length; i++) {
+            let item = res.characteristics[i];
+            // 支持 read 操作
+            if (item.properties.read) {
+              wx.readBLECharacteristicValue({
+                deviceId,
+                serviceId,
+                characteristicId: item.uuid,
+                success: (res) => {
+                  console.log('readBLECharacteristicValue Success.', res);
+                },
+                fail: (err) => {
+                  console.log('readBLECharacteristicValue Fail.', err);
+                },
+                complete: (res) => {
+                  console.log('readBLECharacteristicValue Complete.', res);
+                }
+              })
+            }
+            // 支持 write 操作
+            if (item.properties.write) {
+              this.canWrite = true;
+              this.$apply();
+              this._deviceId = deviceId;
+              this._serviceId = serviceId;
+              this._characteristicId = item.uuid;
+              this.writeBLECharacteristicValue();
+            }
+            // 支持 notify / indicate 操作
+            if (item.properties.notify || item.properties.indicate) {
+              wx.notifyBLECharacteristicValueChange({
+                deviceId,
+                serviceId,
+                characteristicId: item.uuid,
+                state: true,
+                success: (res) => {
+                  console.log('notifyBLECharacteristicValueChange Success.', res);
+                },
+                fail: (err) => {
+                  console.log('notifyBLECharacteristicValueChange Fail.', err);
+                },
+                complete: (res) => {
+                  console.log('notifyBLECharacteristicValueChange Complete.', res);
+                }
+              })
+            }
+          }
         },
-        fail(res) {
-          console.error('getBLEDeviceCharacteristics', res)
+        fail(err) {
+          console.error('getBLEDeviceCharacteristics Fail', err);
         }
       });
 
+      // 操作之前先监听，保证第一时间获取数据
+      wx.onBLECharacteristicValueChange((res) => {
+        // const idx = this.inArray(this.chs, 'uuid', res.characteristicId)
+        // if (idx === -1) {
+        //   this.chs[this.chs.length] = {
+        //     uuid: res.characteristicId,
+        //     value: this.ab2hex(res.value)
+        //   };
+        // } else {
+        //   this.chs[idx] = {
+        //     uuid: res.characteristicId,
+        //     value: this.ab2hex(res.value)
+        //   };
+        // }
+        //
+        // console.log(res.value)
+        // var a = res.value
+        //
+        // var int8array = new Int8Array(a);
+        //
+        // console.log("监听到特征值更新:" + int8array[0])
+        //
+        // this.$apply();
+        console.log('onBLECharacteristicValueChange', this.ab2hex(res.value));
+      });
 
-      // 监听低功耗蓝牙设备的特征值变化事件。
+    }
+
+    // 向蓝牙设备发送一个0x00的16进制数据
+    writeBLECharacteristicValue() {
+      let buffer = new ArrayBuffer(1)
+      let dataView = new DataView(buffer)
+      dataView.setUint8(0, Math.random() * 255 | 0)
+
+      wx.writeBLECharacteristicValue({
+        deviceId: this._deviceId,
+        serviceId: this._serviceId,
+        characteristicId: this._characteristicId,
+        value: buffer,
+        success: (res) => {
+          console.log('writeBLECharacteristicValue Success.', res);
+        },
+        fail: (err) => {
+          console.log('writeBLECharacteristicValue Fail.', err);
+        },
+        complete: (res) => {
+          console.log('writeBLECharacteristicValue Complete.', res);
+        }
+      })
+    }
+
+    //
+    notifyBLECharacteristicValueChange() {
+
+    }
+
+    // 以指定键值为标准，查找子项在数组中的索引值
+    inArray(arr, key, val) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i][key] === val) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    // ArrayBuffer转16进制字符串示例
+    ab2hex(buffer) {
+      let hexArr = Array.prototype.map.call(
+        new Uint8Array(buffer),
+        function(bit) {
+          return ('00' + bit.toString(16)).slice(-2)
+        }
+      )
+      return hexArr.join('');
     }
   }
 </script>

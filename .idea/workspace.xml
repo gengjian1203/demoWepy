@@ -3,12 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1f4ee889-a5d5-4a86-92ef-c30d74594182" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.wpy" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.wpy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Bar/Bar.wpy" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Bar/Bar.wpy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/home/components/List/List.wpy" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/home/components/List/List.wpy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/home/components/Tab/Tab.wpy" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/home/components/Tab/Tab.wpy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/test/test.wpy" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/test/test.wpy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/test/pages/TestBluetooth/index.wpy" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/test/pages/TestBluetooth/index.wpy" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -55,6 +50,7 @@
       <workItem from="1583662172055" duration="9000" />
       <workItem from="1586920203384" duration="1032000" />
       <workItem from="1589254233097" duration="7961000" />
+      <workItem from="1589421703273" duration="16038000" />
     </task>
     <servers />
   </component>
