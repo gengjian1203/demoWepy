@@ -18,7 +18,8 @@ import wepy from 'wepy'
 export default class List extends wepy.component {
   data = {
     test: 'test'
-  },
+  };
+
   props = {
     list: Array
   }
