@@ -1,9 +1,26 @@
-### 微信小程序蓝牙连接智能硬件流程
-可以通过手机下载APP应用来模拟蓝牙设备
+### 微信小程序BLE蓝牙连接智能硬件流程
+微信小程序蓝牙模块只支持BLE，通常说的蓝牙4.0（及以上版本）。  
+特点在于低功耗，高速率，距离短，数据量小，以字节流传输。  
+  
+可以通过手机下载对应APP应用来模拟被连接的硬件设备  
 * iOS lightblue
 * Android BLE调试宝
 
-### 微信小程序蓝牙常用相关Api
+### 微信小程序蓝牙官方文档
+[微信小程序蓝牙官方文档](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.startBluetoothDevicesDiscovery.html)
+
+### 微信小程序蓝牙通讯流程
+1. 初始化蓝牙适配器。
+2. 搜索蓝牙设备获取设备UUID(deviceId)。（占用资源较多，不搜索要及时停止搜索）（另部分安卓机可能需要获取位置权限才能搜索到蓝牙设备）
+3. 配对绑定设备，建立连接。
+4. 通过设备UUID(deviceId)，获取该设备的设备所有服务(services)。
+5. 通过设备UUID(deviceId)、服务UUID(serviceId)，获取蓝牙设备指定服务的所有特征值(characteristic)。
+6. 通过特征值(characteristic)的属性，获取该特征值的读、写、广播权限。
+7. 通过设备UUID(deviceId)、服务UUID(serviceId)、特征值UUID(characteristicId)，来对该特征值进行读写操作。（传输类型只支持ArrayBuffer）
+8. 通过监听特征值的回调，获取特征值的变化情况。进而实现小程序蓝牙与智能硬件设备的通讯。
+9. 由于BLE低功耗蓝牙的连接非常不稳定。比如：比如刚连接上就断开、连接成功之后传输数据随机断开等情况。所以要做好断线重连等底层通讯异常的对应处理。
+
+### 微信小程序蓝牙常用API以及对应返回值描述
 1. 初始化蓝牙适配器  
 wx.openBluetoothAdapter  
   
@@ -53,11 +70,11 @@ wx.onBLECharacteristicValueChange
 特征值UUID：characteristicId: string,  
 特征值: value: ArrayBuffer,  
   
-10. 发送数据到设备中  
+9. 发送数据到设备中  
 wx.writeBLECharacteristicValue  
   
-11. 关闭蓝牙模块。  
+10. 关闭蓝牙模块。  
 wx.closeBluetoothAdapter  
   
-12. 停止搜寻附近的蓝牙外围设备。  
+11. 停止搜寻附近的蓝牙外围设备。  
 wx.stopBluetoothDevicesDiscovery  
